@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller Mecánico — Panel de gestión</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <h1>Taller Mecánico</h1>
+        <p class="subtitulo">Panel de gestión — consume la API REST en <code>/api</code></p>
+    </div>
+    <span class="estado-api" id="estado-api">Conectando…</span>
+</header>
+
+<nav class="tabs">
+    <button class="tab activo" data-panel="clientes">Clientes</button>
+    <button class="tab" data-panel="vehiculos">Vehículos</button>
+    <button class="tab" data-panel="repuestos">Repuestos</button>
+    <button class="tab" data-panel="ordenes">Órdenes</button>
+    <button class="tab" data-panel="facturacion">Facturación</button>
+</nav>
+
+<div id="mensajes" class="mensajes" role="status"></div>
+
+<main>
+    <!-- ===================== CLIENTES ===================== -->
+    <section class="panel activo" id="panel-clientes">
+        <div class="card">
+            <h2>Nuevo cliente</h2>
+            <form id="form-cliente" class="form-grid">
+                <input type="hidden" name="registroId">
+                <label>Nombre
+                    <input name="nombre" placeholder="Juan Pérez" required>
+                </label>
+                <label>Teléfono
+                    <input name="telefono" placeholder="123456789" required>
+                </label>
+                <div class="form-acciones">
+                    <button type="submit" class="primario">Guardar</button>
+                    <button type="button" class="secundario" data-cancelar="cliente" hidden>Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Clientes registrados</h2>
+            <div class="tabla-scroll">
+                <table id="tabla-clientes">
+                    <thead>
+                    <tr><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" id="card-vehiculos-cliente" hidden>
+            <h2>Vehículos del cliente <span id="cliente-seleccionado" class="muted"></span></h2>
+            <div id="lista-vehiculos-cliente"></div>
+        </div>
+    </section>
+
+    <!-- ===================== VEHÍCULOS ===================== -->
+    <section class="panel" id="panel-vehiculos">
+        <div class="card">
+            <h2>Nuevo vehículo</h2>
+            <form id="form-vehiculo" class="form-grid">
+                <input type="hidden" name="registroId">
+                <label>Patente
+                    <input name="patente" placeholder="ABC123 o AB123CD" required>
+                </label>
+                <label>Marca
+                    <input name="marca" placeholder="Ford" required>
+                </label>
+                <label>Modelo
+                    <input name="modelo" placeholder="Fiesta" required>
+                </label>
+                <label>Cliente
+                    <select name="clienteId" required></select>
+                </label>
+                <div class="form-acciones">
+                    <button type="submit" class="primario">Guardar</button>
+                    <button type="button" class="secundario" data-cancelar="vehiculo" hidden>Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Vehículos registrados</h2>
+            <div class="tabla-scroll">
+                <table id="tabla-vehiculos">
+                    <thead>
+                    <tr><th>Patente</th><th>Marca</th><th>Modelo</th><th>Cliente</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Historial por patente</h2>
+            <form id="form-historial" class="form-inline">
+                <input name="patente" placeholder="ABC123" required>
+                <button type="submit" class="primario">Buscar historial</button>
+            </form>
+            <div id="historial-resultado"></div>
+        </div>
+    </section>
+
+    <!-- ===================== REPUESTOS ===================== -->
+    <section class="panel" id="panel-repuestos">
+        <div class="card">
+            <h2>Nuevo repuesto</h2>
+            <form id="form-repuesto" class="form-grid">
+                <input type="hidden" name="registroId">
+                <label>Nombre
+                    <input name="nombre" placeholder="Filtro de aceite" required>
+                </label>
+                <label>Precio
+                    <input name="precio" type="number" min="0" step="0.01" placeholder="1000" required>
+                </label>
+                <label>Stock
+                    <input name="stock" type="number" min="0" step="1" placeholder="5" required>
+                </label>
+                <div class="form-acciones">
+                    <button type="submit" class="primario">Guardar</button>
+                    <button type="button" class="secundario" data-cancelar="repuesto" hidden>Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Repuestos registrados</h2>
+            <div class="tabla-scroll">
+                <table id="tabla-repuestos">
+                    <thead>
+                    <tr><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== ÓRDENES ===================== -->
+    <section class="panel" id="panel-ordenes">
+        <div class="card">
+            <h2>Nueva orden</h2>
+            <form id="form-orden" class="form-grid">
+                <label>Vehículo
+                    <select name="vehiculoId" required></select>
+                </label>
+                <label>Descripción
+                    <input name="descripcion" placeholder="Cambio de aceite" required>
+                </label>
+                <div class="form-acciones">
+                    <button type="submit" class="primario">Crear orden</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Órdenes</h2>
+                <label class="filtro">Filtrar por estado
+                    <select id="filtro-estado">
+                        <option value="">Todas</option>
+                        <option value="INGRESADO">INGRESADO</option>
+                        <option value="EN_REPARACION">EN_REPARACION</option>
+                        <option value="TERMINADO">TERMINADO</option>
+                        <option value="ENTREGADO">ENTREGADO</option>
+                        <option value="CANCELADO">CANCELADO</option>
+                    </select>
+                </label>
+            </div>
+            <div class="tabla-scroll">
+                <table id="tabla-ordenes">
+                    <thead>
+                    <tr>
+                        <th>Patente</th><th>Descripción</th><th>Estado</th>
+                        <th>Costo repuestos</th><th>Costo final</th><th>Horas reparación</th><th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FACTURACIÓN ===================== -->
+    <section class="panel" id="panel-facturacion">
+        <div class="card">
+            <h2>Facturación mensual</h2>
+            <p class="muted">Consulta las órdenes ENTREGADAS y el total facturado en el mes seleccionado.</p>
+            <form id="form-facturacion" class="form-inline">
+                <input type="month" name="mes" required>
+                <button type="submit" class="primario">Consultar</button>
+            </form>
+            <div id="facturacion-resultado" class="stats"></div>
+        </div>
+    </section>
+</main>
+
+<!-- ===================== DIÁLOGO DE ORDEN ===================== -->
+<dialog id="dialogo-orden" class="dialogo">
+    <div class="dialogo-header">
+        <h3>Orden <span id="dlg-patente" class="muted"></span></h3>
+        <button type="button" id="dlg-cerrar" class="secundario">Cerrar</button>
+    </div>
+
+    <div id="dlg-detalle" class="dialogo-detalle"></div>
+
+    <div class="dialogo-acciones">
+        <fieldset>
+            <legend>Cambiar estado</legend>
+            <div class="form-inline">
+                <select id="dlg-estado">
+                    <option value="INGRESADO">INGRESADO</option>
+                    <option value="EN_REPARACION">EN_REPARACION</option>
+                    <option value="TERMINADO">TERMINADO</option>
+                    <option value="ENTREGADO">ENTREGADO</option>
+                    <option value="CANCELADO">CANCELADO</option>
+                </select>
+                <button type="button" id="dlg-guardar-estado" class="primario">Guardar estado</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Costo final</legend>
+            <div class="form-inline">
+                <input type="number" id="dlg-costo" min="0" step="0.01" placeholder="25000">
+                <button type="button" id="dlg-guardar-costo" class="primario">Guardar costo</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Agregar repuesto</legend>
+            <div class="form-inline">
+                <select id="dlg-repuesto"></select>
+                <input type="number" id="dlg-cantidad" min="1" step="1" value="1">
+                <button type="button" id="dlg-agregar-repuesto" class="primario">Agregar</button>
+            </div>
+        </fieldset>
+    </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
