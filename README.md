@@ -1,4 +1,10 @@
-# Taller Mecánico — API REST + Panel web
+# TP Integrador · DAW1 — Taller Mecánico
+Alumno/a: Rearte Fonzalida Alex
+
+Legajo: 510145
+
+Enunciado elegido: Taller
+# Descripción
 
 API para seguir cada auto desde que ingresa al taller hasta que se entrega al cliente.
 Incluye un panel web estático para operar la API desde el navegador.
